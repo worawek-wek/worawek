@@ -1,0 +1,17 @@
+<nz-content class="content-web">
+  <section>
+    <div nz-row style="padding: 0 15px;">
+      <div nz-col class="content-div-container">
+        <div nz-row nzJustify="center">
+          <div nz-col [nzSpan]="aboutList.img_width">
+            <img width="100%" src="{{imgUpdateUrl}}" alt="">
+          </div>
+        </div>
+        <nz-divider *ngIf="aboutList.active else br" nzText={{aboutList.title}} [nzOrientation]="aboutList.title_float"></nz-divider>
+        <ng-template #br><br></ng-template>
+        <p [innerHTML]="aboutList.detail">
+        </p>
+      </div>
+    </div>
+  </section>
+</nz-content>

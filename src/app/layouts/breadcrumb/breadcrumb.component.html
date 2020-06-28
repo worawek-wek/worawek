@@ -1,0 +1,9 @@
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>
+        <i nz-icon nzType="home"></i>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item *ngFor="let data of this.DataPageService.breadcrumb">
+        <a *ngIf="data.url; else e" routerLink="{{data.url}}">{{data.name}}</a>
+        <ng-template #e>{{data.name}}</ng-template>
+      </nz-breadcrumb-item>
+    </nz-breadcrumb>

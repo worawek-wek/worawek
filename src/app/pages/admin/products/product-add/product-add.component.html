@@ -1,0 +1,71 @@
+<nz-divider class="title-page" nzText="Create Product" nzOrientation="left"></nz-divider>
+<div nz-row class="header-view">
+  <div nz-col nzSpan='24'>
+    <button style="margin-bottom: 1em;" nz-button [routerLink]="idEdit?'../..':'..'"><i nz-icon nzType="left"
+        nzTheme="outline"></i>Back</button>&nbsp;
+    <button nz-button style="float: right;" [nzType]="'primary'" [disabled]="insertLoading" (click)="saveProduct()"><i
+        nz-icon nzType="save" nzTheme="outline"></i>Save</button>
+  </div>
+  <div nz-col *ngIf="display" nzSpan="24">
+    <nz-card *ngIf="display">
+      <nz-spin [nzSpinning]="insertLoading">
+        <div *ngIf='idEdit' nz-row nzJustify="end">
+          <nz-switch [(ngModel)]="product_active"></nz-switch>
+        </div>
+        <form nz-col [nzLg]="20" [nzXl]="17" nz-form [formGroup]="insertForm" (ngSubmit)="saveProduct()">
+          <h4><span class='required'>* </span>Picture</h4>
+          <nz-form-item>
+            <div nz-row nzJustify="center">
+              <div nz-col>
+                <nz-upload class="avatar-uploader {{borderred}}"
+                  nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76" nzName="avatar" nzListType="picture-card"
+                  [nzShowUploadList]="false" [nzBeforeUpload]="beforeUploadInsert"
+                  (nzChange)="handleChangeInsert($event)">
+                  <ng-container *ngIf="!imgInsertUrl">
+                    <i class="upload-icon" nz-icon [nzType]="loadingInsert ? 'loading' : 'plus'"></i>
+                    <div class="ant-upload-text">Upload</div>
+                  </ng-container>
+                  <img *ngIf="imgInsertUrl" [src]="imgInsertUrl" style="width: 100%" />
+                </nz-upload>
+
+                <div *ngIf="!validatePicture" class="validatePicture">Please upload picture</div>
+              </div>
+            </div>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control nzSpan="12" nzErrorTip="Please input your Code!">
+              <h4><span class='required'>* </span>Code</h4>
+              <input nz-input formControlName="product_code" placeholder="Code">
+            </nz-form-control>
+            <nz-form-control nzSpan="12" nzOffset="1" nzErrorTip="Please input your Name!">
+              <h4><span class='required'>* </span>Name</h4>
+              <input nz-input formControlName="product_name" placeholder="Name">
+            </nz-form-control>
+          </nz-form-item>
+          <!-- <nz-form-item>
+          </nz-form-item> -->
+          <h4>Price</h4>
+          <nz-form-item>
+            <nz-form-control nzSpan="12">
+              <input nz-input formControlName="product_price" placeholder="Price">
+            </nz-form-control>
+          </nz-form-item>
+          <h4>weight</h4>
+          <nz-form-item>
+            <nz-form-control nzSpan="12">
+              <input nz-input formControlName="product_weight" placeholder="Weight">
+            </nz-form-control>
+          </nz-form-item>
+          <h4>Detail</h4>
+          <nz-form-item>
+            <nz-form-control>
+              <ckeditor formControlName="product_detail" [editor]="Editor">
+              </ckeditor>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </nz-spin>
+    </nz-card>
+    <button nz-button [nzType]="'primary'" [disabled]="insertLoading" (click)="saveProduct()"><i nz-icon nzType="save"
+        nzTheme="outline"></i>Save</button>
+  </div>

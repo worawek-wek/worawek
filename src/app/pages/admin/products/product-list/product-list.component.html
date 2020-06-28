@@ -1,0 +1,131 @@
+<app-page-title></app-page-title>
+<div nz-row class="header-view">
+  <div nz-col nzSpan="21">
+    <form nz-form [formGroup]="searchForm">
+      <div nz-row [nzGutter]="24">
+        <nz-form-label>Filter</nz-form-label>
+        <div nz-col [nzSpan]="4" [nzSm]="18" [nzMd]="8" [nzLg]="4">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select nzShowSearch nzAllowClear [nzShowArrow]="false" (nzOnSearch)="addObtionCode($event)" (ngModelChange)="search()"
+                formControlName="product_code" nzPlaceHolder="Code">
+                <nz-option *ngIf="autoOptionCode" [nzLabel]="autoOptionCode" [nzValue]="autoOptionCode"></nz-option>
+                <nz-option *ngFor="let o of listOfSearchCode" [nzLabel]="o.product_code" [nzValue]="o.product_code">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="4" [nzSm]="18" [nzMd]="8" [nzLg]="4">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select nzShowSearch nzAllowClear [nzShowArrow]="false" (nzOnSearch)="addObtionName($event)" (ngModelChange)="search()"
+                formControlName="product_name" nzPlaceHolder="Name">
+                <nz-option *ngIf="autoOptionName" [nzLabel]="autoOptionName" [nzValue]="autoOptionName"></nz-option>
+                <nz-option *ngFor="let o of listOfSearchName" [nzLabel]="o.product_name" [nzValue]="o.product_name">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="4" [nzSm]="18" [nzMd]="8" [nzLg]="4">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select nzAllowClear (ngModelChange)="search()" formControlName="product_active" nzPlaceHolder="Active">
+                <nz-option nzValue="1" nzLabel="Enabled"></nz-option>
+                <nz-option nzValue="0" nzLabel="Disabled"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="6" nzMd='hide'>
+          <nz-form-item>
+            <nz-form-control>
+              <nz-range-picker formControlName="created_at" [nzFormat]="'dd/MM/yyyy'"
+                [nzPlaceHolder]="['D/M/Y  Start','D/M/Y  End']" (ngModelChange)="search()"></nz-range-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <button nz-button (click)="clearSearch()">Clear</button>
+
+      </div>
+    </form>
+  </div>
+  <div nz-col nzSpan="3">
+    <button nz-button class="add" [nzType]="'primary'" routerLink='add'><i nz-icon nzType="file-add" nzTheme="outline"></i>Create</button>
+  </div>
+  <div nz-col nzSpan="24" *ngIf="setOfCheckedId.size !== 0">
+  <div class="delete-button">
+    <span> Selected {{ setOfCheckedId.size }} items </span>
+    <button nz-popconfirm nzPopconfirmTitle="Are you sure delete all task?" nzOkText="ok" nzCancelText="cancel"
+    (nzOnConfirm)="sendRequest()" nz-button nzType="danger" [nzLoading]="loadingDeleteAll">
+      Delete <i nz-icon nzType="delete" nzTwotoneColor="#D00C3D"></i>
+    </button>
+  </div>
+</div>
+</div>
+
+<!-- </nz-card> -->
+<nz-table nzShowSizeChanger [nzData]="listOfProduct" [nzFrontPagination]="false" [nzLoading]="loadingTable"
+  [nzTotal]="total" [nzPageSize]="pageSize" [nzPageIndex]="pageIndex" [nzSize]="'middle'" [nzShowQuickJumper]="true"
+  (nzQueryParams)="onQueryParamsChange($event)" [nzShowTotal]="totalTemplate" (nzCurrentPageDataChange)="onCurrentPageDataChange($event)">
+  <thead>
+    <tr>
+      <th [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+      <th nzColumnKey="id" [nzAlign]="'center'">#</th>
+      <th nzColumnKey="product_img">Picture</th>
+      <th nzColumnKey="product_code" [nzAlign]="'center'" [nzSortFn]="true" width="20%">Code</th>
+      <th nzColumnKey="product_name" [nzAlign]="'center'" [nzSortFn]="true" width="20%">Name</th>
+      <th nzColumnKey="product_price" [nzAlign]="'center'" width="7%">QTY</th>
+      <th nzColumnKey="product_price" [nzAlign]="'center'" width="10%">Price</th>
+      <th nzColumnKey="product_weight" [nzAlign]="'center'" width="10%">Weight</th>
+      <th nzColumnKey="active">Active</th>
+      <th nzColumnKey="created_at">created</th>
+      <th nzColumnKey="updated_at">updated</th>
+      <th nzColumnKey="email" width="10%">manage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let product of listOfProduct; index as i;">
+      <td [nzChecked]="setOfCheckedId.has(product.id)" (nzCheckedChange)="onItemChecked(product.id, $event)"></td>
+      <td [nzAlign]="'center'">{{results.from++i}}</td>
+      <td>
+        <a (click)="viewPicture(product.product_img_name)">
+          <img width="70px" src={{imageUrl+product.product_img_name}}
+            onerror="this.src='http://127.0.0.1:8000/upload/img_not_found.png';">
+        </a>
+      </td>
+      <td [nzAlign]="'center'">{{ product.product_code }}</td>
+      <td [nzAlign]="'center'">{{ product.product_name }}</td>
+      <td [nzAlign]="'right'">{{ product.product_qty }}
+        <a nz-popconfirm [nzPopconfirmTitle]="iconTpl" nzOkText="ok" nzCancelText="cancel" (nzOnConfirm)="addStock(product.id,i,product.product_qty)">&nbsp;<i nz-icon [nzType]="product.product_qty ? 'plus-circle':'loading'"></i></a></td>
+      <td class="price" [nzAlign]="'right'">{{ product.product_price }} ฿</td>
+      <td [nzAlign]="'right'">{{ product.product_weight }} Kg</td>
+      <td>
+        <nz-switch nzSize="small" [(ngModel)]="product.product_active" (ngModelChange)="clickSwitch($event,product.id)">
+        </nz-switch>
+      </td>
+
+      <td>{{ product.created }}</td>
+      <td>{{ product.updated }}</td>
+      <td>
+        <a [routerLink]="'add/'+product.id"><i nz-icon nzType="copy" nzTheme="outline"></i></a>
+        &nbsp;
+        <a [routerLink]="product.id+'/edit'"><i nz-icon nzType="edit" nzTheme="twotone" nzTwotoneColor="#FFA500"></i></a>
+        &nbsp;
+        <a nz-popconfirm nzPopconfirmTitle="Are you sure delete this task?" nzOkText="ok" nzCancelText="cancel"
+          (nzOnConfirm)="deleate(product.id)"><i nz-icon nzType="delete" nzTheme="twotone" nzTwotoneColor="#D00C3D"></i></a>
+      </td>
+
+      <ng-template #iconTpl>
+        <nz-input-number placeholder="QTY" [(ngModel)]="qty" [nzMin]="1"></nz-input-number>
+      </ng-template>
+    </tr>
+  </tbody>
+</nz-table>
+<ng-template #totalTemplate let-total>Total {{nowTotal}}/{{ total }} items</ng-template>
+<nz-modal [nzWidth]="1000" [nzStyle]="{ top: '20px' }" [(nzVisible)]="isVisiblePic" [nzFooter]="null"
+  (nzOnCancel)="mPicCancel()">
+  <img [src]="picture" [ngStyle]="{ width: '100%' }"
+    onerror="this.src='http://127.0.0.1:8000/upload/img_not_found.png';" />
+</nz-modal>

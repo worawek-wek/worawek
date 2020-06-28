@@ -1,0 +1,103 @@
+<app-page-title></app-page-title>
+<div nz-row class="header-view">
+  <div nz-col nzSpan="21">
+    <form nz-form [formGroup]="searchForm">
+      <div nz-row [nzGutter]="24">
+        <nz-form-label>Filter</nz-form-label>
+        <div nz-col [nzSpan]="4" [nzSm]="18" [nzMd]="8" [nzLg]="4">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select nzShowSearch nzAllowClear [nzShowArrow]="false" (nzOnSearch)="addObtion($event)" (ngModelChange)="search()"
+                formControlName="news_title" nzPlaceHolder="Title">
+                <nz-option *ngIf="autoOption" [nzLabel]="autoOption" [nzValue]="autoOption"></nz-option>
+                <nz-option *ngFor="let o of listOfSearchTitle" [nzLabel]="o.news_title" [nzValue]="o.news_title">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="4" [nzSm]="18" [nzMd]="8" [nzLg]="4">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select nzAllowClear (ngModelChange)="search()" formControlName="news_active" nzPlaceHolder="Active">
+                <nz-option nzValue="1" nzLabel="Enabled"></nz-option>
+                <nz-option nzValue="0" nzLabel="Disabled"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="6" nzMd='hide'>
+          <nz-form-item>
+            <nz-form-control>
+              <nz-range-picker formControlName="created_at" [nzFormat]="'dd/MM/yyyy'"
+                [nzPlaceHolder]="['D/M/Y  Start','D/M/Y  End']" (ngModelChange)="search()"></nz-range-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <button nz-button (click)="clearSearch()">Clear</button>
+
+      </div>
+    </form>
+  </div>
+  <div nz-col nzSpan="3">
+    <button nz-button class="add" [nzType]="'primary'" routerLink='add'><i nz-icon nzType="file-add" nzTheme="outline"></i>Create</button>
+  </div>
+  <div nz-col nzSpan="24" *ngIf="setOfCheckedId.size !== 0">
+  <div class="delete-button">
+    <span> Selected {{ setOfCheckedId.size }} items </span>
+    <button nz-popconfirm nzPopconfirmTitle="Are you sure delete all task?" nzOkText="ok" nzCancelText="cancel"
+    (nzOnConfirm)="sendRequest()" nz-button nzType="danger" [nzLoading]="loadingDeleteAll">
+      Delete <i nz-icon nzType="delete" nzTwotoneColor="#D00C3D"></i>
+    </button>
+  </div>
+</div>
+</div>
+
+<!-- </nz-card> -->
+<nz-table nzShowSizeChanger [nzData]="listOfNews" [nzFrontPagination]="false" [nzLoading]="loadingTable"
+  [nzTotal]="total" [nzPageSize]="pageSize" [nzPageIndex]="pageIndex" [nzSize]="'middle'" [nzShowQuickJumper]="true"
+  (nzQueryParams)="onQueryParamsChange($event)" [nzShowTotal]="totalTemplate" (nzCurrentPageDataChange)="onCurrentPageDataChange($event)">
+  <thead>
+    <tr>
+      <th [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+      <th nzColumnKey="id" [nzAlign]="'center'">#</th>
+      <th nzColumnKey="name">Picture</th>
+      <th nzColumnKey="news_title" [nzAlign]="'center'" [nzSortFn]="true" width="40%">Title</th>
+      <th nzColumnKey="active">Active</th>
+      <th nzColumnKey="created_at">created</th>
+      <th nzColumnKey="updated_at">updated</th>
+      <th nzColumnKey="email">manage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let news of listOfNews; index as i;">
+      <td [nzChecked]="setOfCheckedId.has(news.id)" (nzCheckedChange)="onItemChecked(news.id, $event)"></td>
+      <td [nzAlign]="'center'">{{results.from++i}}</td>
+      <td>
+        <a (click)="viewPicture(news.news_img_name)">
+          <img width="100px" src={{imageUrl+news.news_img_name}}
+            onerror="this.src='http://127.0.0.1:8000/upload/img_not_found.png';">
+        </a>
+      </td>
+      <td [nzAlign]="'center'">{{ news.news_title }}</td>
+      <td>
+        <nz-switch nzSize="small" [(ngModel)]="news.news_active" (ngModelChange)="clickSwitch($event,news.id)">
+        </nz-switch>
+      </td>
+      <td>{{ news.created }}</td>
+      <td>{{ news.updated }}</td>
+      <td>
+        <a [routerLink]="news.id+'/edit'"><i nz-icon nzType="edit" nzTheme="twotone" nzTwotoneColor="#FFA500"></i></a>
+        &nbsp;
+        <a nz-popconfirm nzPopconfirmTitle="Are you sure delete this task?" nzOkText="ok" nzCancelText="cancel"
+          (nzOnConfirm)="deleate(news.id)"><i nz-icon nzType="delete" nzTheme="twotone" nzTwotoneColor="#D00C3D"></i></a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+<ng-template #totalTemplate let-total>Total {{nowTotal}}/{{ total }} items</ng-template>
+<nz-modal [nzWidth]="1000" [nzStyle]="{ top: '20px' }" [(nzVisible)]="isVisiblePic" [nzFooter]="null"
+  (nzOnCancel)="mPicCancel()">
+  <img [src]="picture" [ngStyle]="{ width: '100%' }"
+    onerror="this.src='http://127.0.0.1:8000/upload/img_not_found.png';" />
+</nz-modal>

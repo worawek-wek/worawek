@@ -1,0 +1,70 @@
+<nz-carousel class="carousel-slide" nzAutoPlay>
+  <div nz-carousel-content nz-row *ngFor="let index of listOfSlide">
+    <img width="100%" src={{imageUrl+index.name}} alt="">
+    <!-- <div class="centered"> -->
+      <!-- <h1 nz-typography>h1. Ant Design</h1> -->
+      <!-- <button nz-button nzType="primary" [nzSize]="'large'" nzShape="round">ลองเล่นดูก่อน ฟรี</button> -->
+      <!-- <h1>h1. Ant Design</h1> -->
+    <!-- </div> -->
+    <div style="
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #10101294;
+      /* border-radius: 20px; */
+      top: 0;
+      left: 0;">
+      <button style="top:40%" nz-button nzType="primary" [nzSize]="'large'" nzShape="round">ลองเล่นดูก่อน ฟรี</button>
+    </div>
+  </div>
+</nz-carousel>
+<nz-content class="content-web">
+  <section>
+    <nz-divider style="font-size: x-large" nzText="เลือกรูปแบบธุรกิจที่คุณต้องการ" nzOrientation="left"></nz-divider>
+    <div nz-row>
+      <div nz-col nzSpan="12" [nzXs]="24" [nzSm]="12" class="content-div-container">
+        <h2>
+          เว็บไซต์คอนเทนท์
+        </h2>
+      </div>
+      <div style="float: right;" nz-col nzSpan="12" [nzXs]="24" [nzSm]="12" class="content-div-container">
+        <img width="100%" src="{{imageUrl}}13123227_477425269128050_5732469457721703266_o.jpg" alt="">
+      </div>
+    <div nz-row>
+      <div style="float: right;" nz-col nzSpan="12" [nzXs]="24" [nzSm]="12" class="content-div-container">
+        <img width="100%" src="{{imageUrl}}13123227_477425269128050_5732469457721703266_o.jpg" alt="">
+      </div>
+      <div style="float: left;" nz-col nzSpan="12" [nzXs]="24" [nzSm]="12" class="content-div-container">
+        <h2>
+          เว็บไซต์ C-Commerce
+        </h2>
+      </div>
+    </div>
+  </div>
+  </section>
+</nz-content>
+
+<section style="background-image: url({{imageUrl}}Capture.png);">
+  <div style="background-color: #10101294;">
+  <nz-divider style="font-size: x-large" nzText="เลือกรูปแบบธุรกิจที่คุณต้องการ" nzOrientation="left"></nz-divider>
+  <div nz-row>
+    <div nz-col nzSpan="12" [nzXs]="24" [nzSm]="12" class="content-div-container">
+      <h2>
+        เว็บไซต์คอนเทนท์
+      </h2>
+    </div>
+    <div nz-col nzSpan="12" [nzXs]="24" [nzSm]="12" class="content-div-container">
+      <img width="100%" src="{{imageUrl}}13123227_477425269128050_5732469457721703266_o.jpg" alt="">
+    </div>
+  </div>
+</div>
+  <!-- <div style="
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color:  rgba(50, 50, 50, .5);
+  /* border-radius: 20px; */
+  top: 0;
+  left: 0;">
+</div> -->
+</section>

@@ -1,0 +1,59 @@
+<nz-divider class="title-page" nzText="Create News" nzOrientation="left"></nz-divider>
+<div nz-row class="header-view">
+  <div nz-col nzSpan='24'>
+    <button style="margin-bottom: 1em;" nz-button [routerLink]="idEdit?'../..':'..'"><i nz-icon nzType="left"
+        nzTheme="outline"></i>Back</button>&nbsp;
+    <button nz-button style="float: right;" [nzType]="'primary'" [disabled]="insertLoading" (click)="saveNews()"><i
+        nz-icon nzType="save" nzTheme="outline"></i>Save</button>
+  </div>
+  <div nz-col *ngIf="display" nzSpan="24">
+    <nz-card *ngIf="display">
+      <nz-spin [nzSpinning]="insertLoading">
+      <div *ngIf='idEdit' nz-row nzJustify="end">
+        <nz-switch [(ngModel)]="news_active"></nz-switch>
+      </div>
+      <form nz-col [nzLg]="20" [nzXl]="17" nz-form [formGroup]="insertForm" (ngSubmit)="saveNews()">
+          <h4>Picture</h4>
+          <nz-form-item>
+            <div nz-row nzJustify="center">
+              <div nz-col>
+                <nz-upload class="avatar-uploader {{borderred}}"
+                  nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76" nzName="avatar" nzListType="picture-card"
+                  [nzShowUploadList]="false" [nzBeforeUpload]="beforeUploadInsert"
+                  (nzChange)="handleChangeInsert($event)">
+                  <ng-container *ngIf="!imgInsertUrl">
+                    <i class="upload-icon" nz-icon [nzType]="loadingInsert ? 'loading' : 'plus'"></i>
+                    <div class="ant-upload-text">Upload</div>
+                  </ng-container>
+                  <img *ngIf="imgInsertUrl" [src]="imgInsertUrl" style="width: 100%" />
+                </nz-upload>
+
+                <div *ngIf="!validatePicture" class="validatePicture">Please upload picture</div>
+              </div>
+            </div>
+          </nz-form-item>
+          <h4>Title</h4>
+          <nz-form-item>
+            <nz-form-control nzSpan="12" nzErrorTip="Please input your Title!">
+              <input nz-input formControlName="news_title" placeholder="Title">
+            </nz-form-control>
+          </nz-form-item>
+          <h4>Detail(short)</h4>
+          <nz-form-item>
+            <nz-form-control nzSpan="12">
+              <ckeditor formControlName="news_detail_short" [editor]="Editor"></ckeditor>
+            </nz-form-control>
+          </nz-form-item>
+          <h4>Detail</h4>
+          <nz-form-item>
+            <nz-form-control>
+              <ckeditor formControlName="news_detail" [editor]="Editor">
+              </ckeditor>
+            </nz-form-control>
+          </nz-form-item>
+      </form>
+    </nz-spin>
+  </nz-card>
+    <button nz-button [nzType]="'primary'" [disabled]="insertLoading" (click)="saveNews()"><i nz-icon nzType="save"
+        nzTheme="outline"></i>Save</button>
+  </div>

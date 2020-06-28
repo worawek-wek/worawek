@@ -1,0 +1,84 @@
+<app-page-title></app-page-title>
+<div nz-row class="header-view">
+  <div nz-col nzSpan="24">
+    <!-- <div nz-row nzJustify="start"><b>update</b> : {{aboutList.updated}}</div><br> -->
+    <!-- <nz-card> -->
+    <form nz-form [formGroup]="updateForm" (ngSubmit)="UpdateAbout()">
+      <nz-spin [nzSpinning]="loading">
+        <nz-form-item>
+          <nz-form-control>
+            <div nz-row nzJustify="center">
+              <div nz-col [nzSpan]="aboutList.about_img_width">
+                <nz-upload *ngIf="uploadForm" class="avatar-uploader {{borderred}}"
+                  nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76" nzName="avatar" nzListType="picture-card"
+                  [nzShowUploadList]="false" [nzBeforeUpload]="beforeUploadUpdate"
+                  (nzChange)="handleChangeUpdate($event)">
+                  <ng-container *ngIf="!imgUpdateUrl">
+                    <i class="upload-icon" nz-icon [nzType]="loadingUpdate ? 'loading' : 'plus'"></i>
+                    <div class="ant-upload-text">Upload</div>
+                  </ng-container>
+                  <img *ngIf="imgUpdateUrl" [src]="imgUpdateUrl" style="width: 100%" />
+                </nz-upload>
+                <div *ngIf="!validatePicture" class="validatePicture">Please upload picture</div>
+              </div>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-control>
+            <div nz-row nzJustify="center">
+              <nz-col nzSpan="20">
+                <nz-slider formControlName='about_img_width' [nzMarks]="marks" [nzMin]="1" [nzMax]="24"
+                  [(ngModel)]="aboutList.about_img_width"></nz-slider>
+              </nz-col>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+        <div nz-col [nzSpan]="14" nzOffset="2">
+          <h4>Title</h4>
+        </div>
+        <nz-form-item>
+          <nz-form-control [nzSpan]="14" nzOffset="2">
+            <input nz-input formControlName='about_title' placeholder="Title" [(ngModel)]="aboutList.about_title"
+              [disabled]="!aboutList.about_title_active" />
+          </nz-form-control>
+          <nz-form-control [nzSpan]="2" nzOffset="1">
+            <nz-switch formControlName="about_title_active" [(ngModel)]="aboutList.about_title_active"></nz-switch>
+          </nz-form-control>
+          <nz-form-control nzOffset="1">
+            <nz-radio-group formControlName='about_title_float' [(ngModel)]="aboutList.about_title_float">
+              <label nz-radio-button nzValue="left"><span>Left</span></label>
+              <label nz-radio-button nzValue="center"><span>Center</span></label>
+              <label nz-radio-button nzValue="right"><span>Right</span></label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+        <div nz-col [nzSpan]="14" nzOffset="2">
+          <h4>Detail</h4>
+        </div>
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Please input detail!">
+            <div nz-row nzJustify="center">
+              <div nz-col nzSpan="20">
+                <!-- <angular-editor formControlName="about_detail" [config]="editorConfig" [(ngModel)]="vDetail"></angular-editor> -->
+                <ckeditor formControlName="about_detail" [editor]="Editor" [(ngModel)]="aboutList.about_detail">
+                </ckeditor>
+              </div>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-spin>
+      <div nz-row nzJustify="left">
+        <div nz-col nzOffset="2">
+          <button nz-button (click)="reset($event)" [disabled]="isUpdating">Reset</button>
+          &nbsp;
+          <button nz-button [nzType]="'primary'" [disabled]="isUpdating">Save</button>
+        </div>
+      </div>
+    </form>
+    <!-- </nz-card> -->
+  </div>
+</div>
+<br>
+<br>
+<br>

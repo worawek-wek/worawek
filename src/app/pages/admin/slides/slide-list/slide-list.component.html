@@ -1,0 +1,159 @@
+<app-page-title></app-page-title>
+<div nz-row class="header-view">
+  <div nz-col nzSpan="21">
+    <nz-card *ngIf="displayAdd">
+      <form nz-form [formGroup]="insertForm" (ngSubmit)="insertSlide()">
+        <nz-spin [nzSpinning]="insertLoading">
+          <nz-form-item>
+            <nz-form-control nzErrorTip="Please input your username!">
+              <nz-upload class="avatar-uploader {{borderred}}"
+                nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76" nzName="avatar" nzListType="picture-card"
+                [nzShowUploadList]="false" [nzBeforeUpload]="beforeUploadInsert"
+                (nzChange)="handleChangeInsert($event)">
+                <ng-container *ngIf="!imgInsertUrl">
+                  <i class="upload-icon" nz-icon [nzType]="loadingInsert ? 'loading' : 'plus'"></i>
+                  <div class="ant-upload-text">Upload</div>
+                </ng-container>
+                <img *ngIf="imgInsertUrl" [src]="imgInsertUrl" style="width: 100%" />
+              </nz-upload>
+              <div *ngIf="!validatePicture" class="validatePicture">Please upload picture</div>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control nzErrorTip="Please input your Title!">
+              <textarea nz-input formControlName="slideTitle" placeholder="Title"
+                [nzAutosize]="{ minRows: 3, maxRows: 6 }"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-spin>
+        <button nz-button [nzType]="'primary'" [disabled]="insertLoading"><i nz-icon nzType="save"
+          nzTheme="outline"></i>Save</button>
+      </form>
+    </nz-card>
+    <form *ngIf="!displayAdd" nz-form [formGroup]="searchForm">
+      <div nz-row [nzGutter]="24">
+        <nz-form-label>Filter</nz-form-label>
+        <div nz-col [nzSpan]="4" [nzSm]="18" [nzMd]="8" [nzLg]="4">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select nzShowSearch nzAllowClear [nzShowArrow]="false" (nzOnSearch)="addObtion($event)" (ngModelChange)="search()"
+                formControlName="slide_title" nzPlaceHolder="Title">
+                <nz-option *ngIf="autoOption" nzAutoFocus [nzLabel]="autoOption" [nzValue]="autoOption"></nz-option>
+                <nz-option *ngFor="let o of listOfSearchTitle" [nzLabel]="o.slide_title" [nzValue]="o.slide_title">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="4" [nzSm]="18" [nzMd]="8" [nzLg]="4">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select nzAllowClear (ngModelChange)="search()" formControlName="slide_active" nzPlaceHolder="Active">
+                <nz-option nzValue="1" nzLabel="Enabled"></nz-option>
+                <nz-option nzValue="0" nzLabel="Disabled"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="6" nzMd='hide'>
+          <nz-form-item>
+            <nz-form-control>
+              <nz-range-picker formControlName="created_at" [nzFormat]="'dd/MM/yyyy'"
+                [nzPlaceHolder]="['D/M/Y  Start','D/M/Y  End']" (ngModelChange)="search()"></nz-range-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <button nz-button (click)="clearSearch()">Clear</button>
+
+      </div>
+    </form>
+  </div>
+  <div nz-col nzSpan="3">
+    <button nz-button class="add" [nzType]="'primary'" (click)="add()"><i nz-icon nzType="file-add" nzTheme="outline"></i>Create<i nz-icon
+        [nzType]="displayAdd ? 'up':'down'"></i></button>
+  </div>
+  <div nz-col nzSpan="24" *ngIf="setOfCheckedId.size !== 0">
+    <div class="delete-button">
+      <span> Selected {{ setOfCheckedId.size }} items </span>
+      <button nz-popconfirm nzPopconfirmTitle="Are you sure delete all task?" nzOkText="ok" nzCancelText="cancel"
+        (nzOnConfirm)="sendRequest()" nz-button nzType="danger" [nzLoading]="loadingDeleteAll">
+        Delete <i nz-icon nzType="delete" nzTwotoneColor="#D00C3D"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- </nz-card> -->
+<nz-table nzShowSizeChanger [nzData]="listOfSlide" [nzFrontPagination]="false" [nzLoading]="loadingTable"
+  [nzTotal]="total" [nzPageSize]="pageSize" [nzPageIndex]="pageIndex" [nzSize]="'middle'" [nzShowQuickJumper]="true"
+  (nzQueryParams)="onQueryParamsChange($event)" [nzShowTotal]="totalTemplate"
+  (nzCurrentPageDataChange)="onCurrentPageDataChange($event)">
+  <thead>
+    <tr>
+      <th [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+      <th nzColumnKey="id" [nzAlign]="'center'">#</th>
+      <th nzColumnKey="name">Picture</th>
+      <th nzColumnKey="slide_title" [nzAlign]="'center'" [nzSortFn]="true" width="40%">Title</th>
+      <th nzColumnKey="active">Active</th>
+      <th nzColumnKey="created_at">created</th>
+      <th nzColumnKey="updated_at">updated</th>
+      <th nzColumnKey="email">manage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let slide of listOfSlide; index as i;">
+      <td [nzChecked]="setOfCheckedId.has(slide.id)" (nzCheckedChange)="onItemChecked(slide.id, $event)"></td>
+      <td [nzAlign]="'center'">{{results.from++i}}</td>
+      <td>
+        <a (click)="viewPicture(slide.slide_img_name)">
+          <img width="100px" src={{imageUrl+slide.slide_img_name}}
+            onerror="this.src='http://127.0.0.1:8000/upload/img_not_found.png';">
+        </a>
+      </td>
+      <td [nzAlign]="'center'">{{ slide.slide_title }}</td>
+      <td>
+        <nz-switch nzSize="small" [(ngModel)]="slide.slide_active" (ngModelChange)="clickSwitch($event,slide['id'])">
+        </nz-switch>
+      </td>
+      <td>{{ slide.created }}</td>
+      <td>{{ slide.updated }}</td>
+      <td>
+        <a (click)="showModal(slide)"><i nz-icon nzType="edit" nzTheme="twotone" nzTwotoneColor="#FFA500"></i></a>
+        &nbsp;
+        <a nz-popconfirm nzPopconfirmTitle="Are you sure delete this task?" nzOkText="ok" nzCancelText="cancel"
+          (nzOnConfirm)="confirm(slide)"><i nz-icon nzType="delete" nzTheme="twotone" nzTwotoneColor="#D00C3D"></i></a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+<ng-template #totalTemplate let-total>Total {{nowTotal}}/{{ total }} items</ng-template>
+<nz-modal *ngIf="isVisible" [(nzVisible)]="isVisible" nzTitle="Edit Slide" (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()" [nzOkLoading]="isUpdating" [nzCancelLoading]="isUpdating">
+  <div nz-row>
+    <div nz-col>
+      <nz-upload class="avatar-uploader" nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76" nzName="avatar"
+        [nzDisabled]="isUpdating" nzListType="picture-card" [nzShowUploadList]="false"
+        [nzBeforeUpload]="beforeUploadUpdate" (nzChange)="handleChangeUpdate($event)">
+        <ng-container *ngIf="!imgUpdateUrl">
+          <i class="upload-icon" nz-icon [nzType]="loadingUpdate ? 'loading' : 'plus'"></i>
+          <div class="ant-upload-text">Upload</div>
+        </ng-container>
+        <img *ngIf="imgUpdateUrl" [src]="imgUpdateUrl" style="width: 100%" />
+      </nz-upload>
+    </div>
+    <div nz-col nzSpan="16">
+      <textarea nz-input placeholder="Title" [nzAutosize]="{ minRows: 4, maxRows: 6 }" [(ngModel)]="vTitleUpdate"
+        [disabled]="isUpdating"></textarea>
+      <br />
+      <br />
+    </div>
+  </div>
+  <div nz-row nzJustify="end">
+    <nz-switch [(ngModel)]="vActiveUpdate"></nz-switch>
+  </div>
+</nz-modal>
+<nz-modal [nzWidth]="1000" [nzStyle]="{ top: '20px' }" [(nzVisible)]="isVisiblePic" [nzFooter]="null"
+  (nzOnCancel)="mPicCancel()">
+  <img [src]="picture" [ngStyle]="{ width: '100%' }"
+    onerror="this.src='http://127.0.0.1:8000/upload/img_not_found.png';" />
+</nz-modal>

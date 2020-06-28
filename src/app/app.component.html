@@ -1,0 +1,126 @@
+<nz-layout *ngIf="this.AuthService.isLoggedIn() && this.DataPageService.admin; else indexPage" class="app-layout">
+  <nz-sider class="menu-sidebar" nzCollapsible nzWidth="256px" nzBreakpoint="lg" [(nzCollapsed)]="isCollapsed"
+    [nzTrigger]="null">
+    <div class="sidebar-logo">
+      <a href="https://ng.ant.design/" target="_blank">
+        <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
+        <h1>Project Angular</h1>
+      </a>
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li *ngFor="let menu of menus;index as i" nz-submenu nzOpen nzTitle={{menu.name}} nzIcon={{menu.icon}}>
+        <ul>
+          <li *ngFor="let sub of menu.subMenu;" nz-menu-item nzMatchRouter>
+            <i nz-icon nzType={{sub.icon}} nzTheme="outline"></i><a routerLink="/{{sub.url}}">{{sub.name}}</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <span class="header-trigger">
+          <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+            (click)="isCollapsed = !isCollapsed"></i>
+          <a class="admin-icon">
+            <nz-avatar nz-dropdown nzTrigger="click" class="avatarUser" nzIcon="user" [nzDropdownMenu]="menu">
+            </nz-avatar>
+          </a>
+        </span>
+      </div>
+    </nz-header>
+    <nz-content class="admin-content">
+      <app-breadcrumb></app-breadcrumb>
+      <div class="inner-content">
+        <router-outlet (page)='pageName($event)'></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item>{{this.AuthService.user_name}}</li>
+    <li nz-menu-item (click)="logout()">logout</li>
+  </ul>
+</nz-dropdown-menu>
+
+<!-- {{location.path()}} -->
+<ng-template #indexPage>
+
+  <ng-container *ngIf="location.path() != '/adminmanage' else loginPage">
+  <nz-layout class="web-layout">
+    <nz-header>
+      <ul class="main-web-menu hide-sm hide-xs" nz-menu nzMode="horizontal">
+        <img class="logo-image" width="150px" [src]="logo" alt="">
+        <li nz-menu-item>
+          <a routerLink="home">หน้าแรก</a>
+        </li>
+        <li nz-menu-item>
+          <a routerLink="product">PRODUCT</a>
+        </li>
+        <li nz-menu-item>
+          <a routerLink="about">เกี่ยวกับเรา</a>
+        </li>
+        <li nz-menu-item>
+          <a routerLink="contact">ติดต่อเรา</a>
+        </li>
+        <li nz-menu-item style="float: right; top: 3px;">
+          <a routerLink="login">LOGIN</a>
+        </li>
+      </ul>
+
+      <ul class="main-web-menu hide-lg hide-md hide-xl" nz-menu nzMode="horizontal">
+
+
+        <div nz-row nzJustify="space-around" nzAlign="middle">
+          <div nz-col nzSpan="4"><i class="trigger x-large font-head-icon" nz-icon
+              [nzType]="visible ? 'menu-unfold' : 'menu-fold'" (click)="visible = !visible"></i></div>
+
+          <div nz-col nzSpan="20">
+            <div nz-row nzJustify="center"><img style="margin-left: -60px; width: 150px;" [src]="logo" alt=""></div>
+          </div>
+        </div>
+      </ul>
+    </nz-header>
+    <router-outlet></router-outlet>
+    <nz-footer class="footer-web">
+      <div nz-row>
+        <div nz-col class="gutter-row" nzXs="24" nzMd="6">
+          <div>
+            <h2>MENU</h2>
+
+          </div>
+          <div>
+            HOME
+          </div>
+          <div>
+            PRODUCT
+          </div>
+          <div>
+            ABOUT US
+          </div>
+          <div>
+            CONTACT US
+          </div>
+        </div>
+        <div nz-col class="gutter-row" nzXs="24" nzMd="6">col-6</div>
+        <div nz-col class="gutter-row" nzXs="24" nzMd="6">col-6</div>
+        <div nz-col class="gutter-row" nzXs="24" nzMd="6">col-6</div>
+      </div>
+    </nz-footer>
+  </nz-layout>
+</ng-container>
+</ng-template>
+<ng-template #loginPage>
+    <router-outlet></router-outlet>
+  </ng-template>
+
+<nz-drawer class="drawer-menu-web" [nzClosable]="false" [nzVisible]="visible" nzPlacement="left" nzTitle="Worawek"
+  (nzOnClose)="close()">
+  <ul nz-menu nzMode="inline" class="sider-menu sider-menu-web">
+    <li nz-menu-item>HOME</li>
+    <li nz-menu-item>ABOUT</li>
+    <li nz-menu-item>PRODUCT</li>
+  </ul>
+</nz-drawer>
